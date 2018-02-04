@@ -1,0 +1,15 @@
+{
+  "name": "gbdkjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint index.js emscripten_bindings.js"
+  },
+  "author": "Chris Maltby",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^4.17.0",
+    "eslint-config-prettier": "^2.9.0"
+  }
+}
