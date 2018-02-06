@@ -459,7 +459,7 @@
           BUFFER_WIDTH,
           BUFFER_HEIGHT,
           WX_REG - 7,
-          WY_REG + 1,
+          WY_REG,
           BUFFER_WIDTH,
           BUFFER_HEIGHT
         );
