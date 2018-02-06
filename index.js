@@ -159,8 +159,13 @@
         }
       });
 
+      var OBP0_REG = 0;
       Object.defineProperty(this, "OBP0_REG", {
+        get: function() {
+          return OBP0_REG;
+        },
         set: function(value) {
+          OBP0_REG = value;
           obp0_palette = [
             colors[4],
             colors[(value >> 2) & 3],
@@ -180,8 +185,13 @@
         }
       });
 
+      var OBP1_REG = 0;
       Object.defineProperty(this, "OBP1_REG", {
+        get: function() {
+          return OBP1_REG;
+        },
         set: function(value) {
+          OBP1_REG = value;
           obp1_palette = [
             colors[value & 3],
             colors[(value >> 2) & 3],

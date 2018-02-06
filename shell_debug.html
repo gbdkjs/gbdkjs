@@ -40,8 +40,29 @@
         border-top: 1px solid #607D8B;
       }
 
+      #gameDebug table {
+        width: 100%;
+        font-family: monospace;
+        font-size: 12px; 
+        background-color: #fff;
+        border-collapse: collapse;    
+        text-align: right; 
+      }
+
+      #gameDebug table th {
+        text-align: left;
+      }
+
+      #gameDebug table tr:nth-child(even) {
+        background-color: #eceff1;
+      }      
+
+      #registerDebug {
+        width: 30%;
+      }
+
       #console {
-        width: 80%;
+        width: 60%;
       }
 
       #console textarea {
@@ -109,6 +130,8 @@
       <section id="windowDebug"><h2>Window Buffer</h2></section>
       <section id="tileDebug"><h2>Tile Memory</h2></section>
       <section id="spriteDebug"><h2>Sprite Memory</h2></section>
+      <section id="registerDebug"><h2>Registers</h2>
+        <div id="registers"></div></section>            
       <section id="console"><h2>Console</h2><textarea class="emscripten" id="output" rows="8"></textarea></section>
     </div>
 
@@ -189,7 +212,32 @@
       document.getElementById("bufferDebug").appendChild(g.get_buffer_canvas());
       document.getElementById("windowDebug").appendChild(g.get_window_canvas());
       document.getElementById("tileDebug").appendChild(g.get_bkg_data_canvas());
-      document.getElementById("spriteDebug").appendChild(g.get_sprite_data_canvas());       
+      document.getElementById("spriteDebug").appendChild(g.get_sprite_data_canvas());
+
+      var registersEl = document.getElementById("registers");
+    
+      function pad(n, width, z) {
+        z = z || "0";
+        n = n + "";
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+      }
+
+      function updateRegisters() {
+        var registers = ["SCX_REG","SCY_REG","WX_REG","WY_REG","OBP0_REG","OBP1_REG"];
+        var html = "<table>";
+        html += registers.map(function(register){
+          return "<tr>" +
+            "<th>" + register + "</th>" +
+            "<td>" + g[register] +  "</td>" +
+            "<td>" + pad(Number(g[register]).toString(2), 8) +  "</td>" +
+            "</tr>"
+        }).join("");
+        html += "</table>";
+        registersEl.innerHTML = html;
+        requestAnimationFrame(updateRegisters);
+      }
+
+      updateRegisters();                  
     </script>
     {{{ SCRIPT }}}
   </body>
