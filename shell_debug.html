@@ -6,11 +6,11 @@
     <title>Emscripten-Generated Code</title>
     <style>
       body {
-        background-color: #333;
-        padding-right: 300px;
+        background-color: #263238;
+        text-align: center;
       }    
       .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      textarea.emscripten { font-family: monospace; width: 80%; }
+      textarea.emscripten { font-family: monospace; }
       div.emscripten { text-align: center; }
       div.emscripten_border { border: 1px solid black; }
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
@@ -20,33 +20,45 @@
         text-align: center;
       }
 
+      #gameDebug {
+        display: inline-block;
+        margin: 0px auto;
+      }
+
       #gameDebug section {
         font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
         display: inline-block;
         vertical-align: top;
-        margin-right: 50px;
+        margin-top: 20px;
+        margin-right: 20px;
+        padding: 3px;
+        background-color: #455a64;
+        border-radius: 6px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        border-top: 1px solid #607D8B;
+      }
+
+      #console {
+        width: 80%;
+      }
+
+      #console textarea {
+        width: 100%;
+        box-sizing: border-box;
       }
 
       #gameDebug section h2 {
-        background-color: #ccc;
         font-size: 14px;
-        padding: 5px;
+        padding: 5px 10px;
+        margin: 0px;
+        color: #CFD8DC;        
       }
 
       #gameDebug section canvas {
         background-color: #fff;
-      }
-
-      #output {
-        position: fixed;
-        width: 300px;
-        right: 0px;
-        top: 0px;
-        bottom: 0px;
-        border: 0;
-        background-color: #222;
-        color: #eee;
-        padding: 10px;
+        display: block;
       }
 
       .spinner {
@@ -97,9 +109,9 @@
       <section id="windowDebug"><h2>Window Buffer</h2></section>
       <section id="tileDebug"><h2>Tile Memory</h2></section>
       <section id="spriteDebug"><h2>Sprite Memory</h2></section>
+      <section id="console"><h2>Console</h2><textarea class="emscripten" id="output" rows="8"></textarea></section>
     </div>
 
-    <textarea class="emscripten" id="output" rows="8"></textarea>
 
     <script type='text/javascript'>
       var statusElement = document.getElementById('status');
