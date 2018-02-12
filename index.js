@@ -222,7 +222,7 @@
       var sprite_data_canvas = document.createElement("canvas");
       var sprite_data_ctx = sprite_data_canvas.getContext("2d");
       sprite_data_canvas.width = TILE_SIZE * 16;
-      sprite_data_canvas.height = TILE_SIZE * 12;
+      sprite_data_canvas.height = TILE_SIZE * 16;
 
       // Init palettes
       var colors = [].concat(COLORS);
@@ -552,7 +552,11 @@
 
       this.set_bkg_data = function(first_tile, nb_tiles, data) {
         for (var i = 0; i < nb_tiles * 16; i++) {
-          bkg_data[i + first_tile * 16] = data[i];
+          bkg_data[(i + first_tile * 16) % 4096] = data[i];
+          // Anything over 2048 is shared with sprite_data
+          if (i + first_tile * 16 > 2048) {
+            sprite_data[(i + first_tile * 16) % 4096] = data[i];
+          }
         }
         bkg_data_dirty = true;
       };
@@ -595,6 +599,11 @@
             sprite_data,
             obp0_palette
           );
+          // Anything over 2048 is shared with bkg_data
+          if (i + first_tile * 16 > 2048) {
+            bkg_data[(i + first_tile * 16) % 4096] = data[i];
+            bkg_data_dirty = true;
+          }
         }
       };
 
