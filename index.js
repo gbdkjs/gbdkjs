@@ -392,6 +392,20 @@
             draw_tile_canvas(buffer_ctx, x, y, bkg_tiles[i], bkg_data_canvas);
           }
         }
+        buffer_ctx.strokeStyle = "red";
+        buffer_ctx.lineWidth = 2;
+        buffer_ctx.strokeRect(
+          SCX_REG - 1,
+          SCY_REG - 1,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+        buffer_ctx.strokeRect(
+          SCX_REG - 1 - BUFFER_WIDTH,
+          SCY_REG - 1 - BUFFER_WIDTH,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
       };
 
       const redraw_window_canvas = function(force) {
@@ -421,6 +435,14 @@
             draw_tile_canvas(window_ctx, x, y, win_tiles[i], bkg_data_canvas);
           }
         }
+        window_ctx.strokeStyle = "red";
+        window_ctx.lineWidth = 2;
+        window_ctx.strokeRect(
+          -1,
+          -1,
+          SCREEN_WIDTH + 2 + 8 - WX_REG,
+          SCREEN_HEIGHT + 2 - WY_REG
+        );
       };
 
       function render() {
