@@ -23,11 +23,6 @@
     const JS_KEY_CTRL = 17;
     const JS_KEY_SHIFT = 16;
 
-    const MINWNDPOSX = 0x07;
-    const MINWNDPOSY = 0x00;
-    const MAXWNDPOSX = 0xa6;
-    const MAXWNDPOSY = 0x8f;
-
     const S_FLIPX = 0x20;
     const S_FLIPY = 0x40;
 
@@ -638,21 +633,6 @@
 
       this.enable_interrupts = function() {};
     };
-
-    exports.J_LEFT = J_LEFT;
-    exports.J_RIGHT = J_RIGHT;
-    exports.J_UP = J_UP;
-    exports.J_DOWN = J_DOWN;
-    exports.J_START = J_START;
-    exports.J_SELECT = J_SELECT;
-    exports.J_A = J_A;
-    exports.J_B = J_B;
-    exports.MINWNDPOSX = MINWNDPOSX;
-    exports.MINWNDPOSY = MINWNDPOSY;
-    exports.MAXWNDPOSX = MAXWNDPOSX;
-    exports.MAXWNDPOSY = MAXWNDPOSY;
-    exports.S_FLIPX = S_FLIPX;
-    exports.S_FLIPY = S_FLIPY;
 
     exports.GBDK = GBDK;
     exports.uint = uint;
