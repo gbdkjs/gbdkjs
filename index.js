@@ -401,6 +401,18 @@
           SCREEN_HEIGHT + 2
         );
         buffer_ctx.strokeRect(
+          SCX_REG - 1,
+          SCY_REG - 1 - BUFFER_WIDTH,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+        buffer_ctx.strokeRect(
+          SCX_REG - 1 - BUFFER_WIDTH,
+          SCY_REG - 1,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+        buffer_ctx.strokeRect(
           SCX_REG - 1 - BUFFER_WIDTH,
           SCY_REG - 1 - BUFFER_WIDTH,
           SCREEN_WIDTH + 2,
