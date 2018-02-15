@@ -124,12 +124,14 @@
       <progress value="0" max="100" id="progress" hidden=1></progress>  
     </div>
 
-    <div id="game"></div>
+    
     <div id="gameDebug">
+      <section><h2>Game</h2><div id="game"></div></section>
       <section id="bufferDebug"><h2>Screen Buffer</h2></section>
       <section id="windowDebug"><h2>Window Buffer</h2></section>
-      <section id="tileDebug"><h2>Tile Memory</h2></section>
-      <section id="spriteDebug"><h2>Sprite Memory</h2></section>
+      <section id="tileDebug"><h2>Tile Data</h2></section>
+      <section id="spriteDataDebug"><h2>Sprite Data</h2></section>
+      <section id="spriteDebug"><h2>Sprites</h2></section>
       <section id="registerDebug"><h2>Registers</h2>
         <div id="registers"></div></section>            
       <section id="console"><h2>Console</h2><textarea class="emscripten" id="output" rows="8"></textarea></section>
@@ -212,7 +214,8 @@
       document.getElementById("bufferDebug").appendChild(g.get_buffer_canvas());
       document.getElementById("windowDebug").appendChild(g.get_window_canvas());
       document.getElementById("tileDebug").appendChild(g.get_bkg_data_canvas());
-      document.getElementById("spriteDebug").appendChild(g.get_sprite_data_canvas());
+      document.getElementById("spriteDataDebug").appendChild(g.get_sprite_data_canvas());
+      document.getElementById("spriteDebug").appendChild(g.get_sprite_canvas());
 
       var registersEl = document.getElementById("registers");
     
@@ -234,10 +237,9 @@
         }).join("");
         html += "</table>";
         registersEl.innerHTML = html;
-        requestAnimationFrame(updateRegisters);
       }
 
-      updateRegisters();                  
+      setInterval(updateRegisters, 200);                  
     </script>
     {{{ SCRIPT }}}
   </body>

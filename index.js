@@ -23,11 +23,14 @@
     const JS_KEY_CTRL = 17;
     const JS_KEY_SHIFT = 16;
 
+    const S_PALETTE = 0x10;
     const S_FLIPX = 0x20;
     const S_FLIPY = 0x40;
 
     const TILE_SIZE = 8;
     const DATA_SIZE = 256;
+    const NUM_BKG_TILES = 256;
+    const NUM_TILES = 384;
     const BUFFER_SIZE = 1024;
     const MAX_SPRITES = 40;
 
@@ -121,36 +124,29 @@
         }
       });
 
-      Object.defineProperty(this, "SPRITES_8x16", {
-        get: function() {
-          // console.log("SET SPRITES_8x16");
-          return;
-        }
-      });
-
-      Object.defineProperty(this, "SHOW_SPRITES", {
-        get: function() {
-          // console.log("SET SHOW_SPRITES");
-          return;
-        }
-      });
-
-      Object.defineProperty(this, "HIDE_SPRITES", {
-        get: function() {
-          // console.log("SET HIDE_SPRITES");
-          return;
-        }
-      });
-
+      var BGP_REG = 0;
       Object.defineProperty(this, "BGP_REG", {
+        get: function() {
+          return BGP_REG;
+        },
         set: function(value) {
-          bkg_palette = [
-            colors[value & 3],
-            colors[(value >> 2) & 3],
-            colors[(value >> 4) & 3],
-            colors[value >> 6]
-          ];
-          bkg_data_dirty = true;
+          var i;
+          if (value !== BGP_REG) {
+            bkg_palette = [
+              colors[value & 3],
+              colors[(value >> 2) & 3],
+              colors[(value >> 4) & 3],
+              colors[value >> 6]
+            ];
+            for (i = 0; i < NUM_BKG_TILES; i++) {
+              gfx_data_dirty[i] = true;
+            }
+            for (i = 0; i < BUFFER_SIZE; i++) {
+              bkg_tiles_dirty[i] = true;
+              win_tiles_dirty[i] = true;
+            }
+            BGP_REG = value;
+          }
         }
       });
 
@@ -160,22 +156,18 @@
           return OBP0_REG;
         },
         set: function(value) {
-          OBP0_REG = value;
-          obp0_palette = [
-            colors[4],
-            colors[(value >> 2) & 3],
-            colors[(value >> 4) & 3],
-            colors[value >> 6]
-          ];
-          for (var i = 0; i < MAX_SPRITES * 16; i++) {
-            draw_tile_data(
-              sprite_data_ctx,
-              ((i / 2) | 0) % 16,
-              2 * ((i / 32) | 0) + i % 2,
-              i,
-              sprite_data,
-              obp0_palette
-            );
+          var i;
+          if (value !== OBP0_REG) {
+            OBP0_REG = value;
+            obp0_palette = [
+              colors[4],
+              colors[(value >> 2) & 3],
+              colors[(value >> 4) & 3],
+              colors[value >> 6]
+            ];
+            for (i = 128; i < NUM_TILES; i++) {
+              gfx_data_dirty[i] = true;
+            }
           }
         }
       });
@@ -186,14 +178,19 @@
           return OBP1_REG;
         },
         set: function(value) {
-          OBP1_REG = value;
-          obp1_palette = [
-            colors[value & 3],
-            colors[(value >> 2) & 3],
-            colors[(value >> 4) & 3],
-            colors[value >> 6]
-          ];
-          obp1_palette;
+          var i;
+          if (value !== OBP0_REG) {
+            OBP1_REG = value;
+            obp1_palette = [
+              colors[4],
+              colors[(value >> 2) & 3],
+              colors[(value >> 4) & 3],
+              colors[value >> 6]
+            ];
+            for (i = 128; i < NUM_TILES; i++) {
+              gfx_data_dirty[i] = true;
+            }
+          }
         }
       });
 
@@ -214,6 +211,16 @@
       window_canvas.width = BUFFER_WIDTH;
       window_canvas.height = BUFFER_HEIGHT;
 
+      var buffer_debug_canvas = document.createElement("canvas");
+      var buffer_debug_ctx = buffer_debug_canvas.getContext("2d");
+      buffer_debug_canvas.width = BUFFER_WIDTH;
+      buffer_debug_canvas.height = BUFFER_HEIGHT;
+
+      var window_debug_canvas = document.createElement("canvas");
+      var window_debug_ctx = window_debug_canvas.getContext("2d");
+      window_debug_canvas.width = BUFFER_WIDTH;
+      window_debug_canvas.height = BUFFER_HEIGHT;
+
       var bkg_data_canvas = document.createElement("canvas");
       var bkg_data_ctx = bkg_data_canvas.getContext("2d");
       bkg_data_canvas.width = TILE_SIZE * 16;
@@ -222,7 +229,12 @@
       var sprite_data_canvas = document.createElement("canvas");
       var sprite_data_ctx = sprite_data_canvas.getContext("2d");
       sprite_data_canvas.width = TILE_SIZE * 16;
-      sprite_data_canvas.height = TILE_SIZE * 16;
+      sprite_data_canvas.height = TILE_SIZE * 32;
+
+      var sprite_canvas = document.createElement("canvas");
+      var sprite_ctx = sprite_canvas.getContext("2d");
+      sprite_canvas.width = TILE_SIZE * 40;
+      sprite_canvas.height = TILE_SIZE * 2;
 
       // Init palettes
       var colors = [].concat(COLORS);
@@ -235,24 +247,13 @@
       var lcd_fn = null;
       var bank = 0;
 
-      var bkg_data_dirty = true;
-      var bkg_tiles_dirty = {
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0
-      };
-      var win_tiles_dirty = {
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0
-      };
-
-      var bkg_data = new Uint8Array(DATA_SIZE * 16);
       var bkg_tiles = new Uint8Array(BUFFER_SIZE);
+      var bkg_tiles_dirty = new Uint8Array(BUFFER_SIZE);
       var win_tiles = new Uint8Array(BUFFER_SIZE);
-      var sprite_data = new Uint8Array(DATA_SIZE * 16);
+      var win_tiles_dirty = new Uint8Array(BUFFER_SIZE);
+      var gfx_data = new Uint8Array(DATA_SIZE * 24);
+      var gfx_data_dirty = new Uint8Array(NUM_TILES);
+
       var tile_image_data = ctx.createImageData(TILE_SIZE, TILE_SIZE);
       var tile_image_data_data = tile_image_data.data;
 
@@ -263,6 +264,10 @@
       var sprite_props = new Uint8Array(MAX_SPRITES);
       for (var i = 0; i < MAX_SPRITES; i++) {
         sorted_sprites[i] = i;
+      }
+      for (var i = 0; i < BUFFER_SIZE; i++) {
+        bkg_tiles_dirty[i] = true;
+        win_tiles_dirty[i] = true;
       }
 
       // Input listeners -------------------------------------------------------
@@ -330,7 +335,6 @@
             tile_image_data_data[pixelIndex + 3] = palette[index].a;
           }
         }
-
         ctx.putImageData(tile_image_data, x * TILE_SIZE, y * TILE_SIZE);
       }
 
@@ -350,25 +354,82 @@
         );
       }
 
-      function redraw_bkg_tiles() {
-        // Draw BG Data Memory
-        bkg_data_canvas.width = bkg_data_canvas.width;
-        for (var i = 0; i < DATA_SIZE; i++) {
-          draw_tile_data(
-            bkg_data_ctx,
-            i % 16,
-            (i / 16) | 0,
-            i,
-            bkg_data,
-            bkg_palette
-          );
+      function redraw_gfx_tiles() {
+        var i;
+        for (i = 0; i < 128; i++) {
+          // bkg_tiles
+          if (gfx_data_dirty[i]) {
+            draw_tile_data(
+              bkg_data_ctx,
+              i % 16,
+              (i / 16) | 0,
+              i,
+              gfx_data,
+              bkg_palette
+            );
+            gfx_data_dirty[i] = false;
+          }
+          // sprite_tiles
+          if (gfx_data_dirty[256 + i]) {
+            // obp0
+            draw_tile_data(
+              sprite_data_ctx,
+              ((i / 2) | 0) % 16,
+              2 * ((i / 32) | 0) + i % 2,
+              256 + i,
+              gfx_data,
+              obp0_palette
+            );
+            // obp1
+            draw_tile_data(
+              sprite_data_ctx,
+              ((i / 2) | 0) % 16,
+              16 + (2 * ((i / 32) | 0) + i % 2),
+              256 + i,
+              gfx_data,
+              obp1_palette
+            );
+            gfx_data_dirty[256 + i] = false;
+          }
+        }
+        // shared sprite and bkg_tiles
+        for (i = 128; i < 256; i++) {
+          if (gfx_data_dirty[i]) {
+            draw_tile_data(
+              bkg_data_ctx,
+              i % 16,
+              (i / 16) | 0,
+              i,
+              gfx_data,
+              bkg_palette
+            );
+            // obp0
+            draw_tile_data(
+              sprite_data_ctx,
+              ((i / 2) | 0) % 16,
+              2 * ((i / 32) | 0) + i % 2,
+              i,
+              gfx_data,
+              obp0_palette
+            );
+            // obp1
+            draw_tile_data(
+              sprite_data_ctx,
+              ((i / 2) | 0) % 16,
+              16 + (2 * ((i / 32) | 0) + i % 2),
+              i,
+              gfx_data,
+              obp1_palette
+            );
+            gfx_data_dirty[i] = false;
+          }
         }
       }
 
-      const redraw_buffer_canvas = function(force) {
+      const redraw_buffer_canvas = function() {
         var i;
-        if (force) {
-          for (i = 0; i < BUFFER_SIZE; i++) {
+        for (i = 0; i < BUFFER_SIZE; i++) {
+          if (bkg_tiles_dirty[i]) {
             draw_tile_canvas(
               buffer_ctx,
               i % 32,
@@ -376,54 +437,15 @@
               bkg_tiles[i],
               bkg_data_canvas
             );
-          }
-        } else {
-          for (i = 0; i < BUFFER_SIZE; i++) {
-            var x = i % 32;
-            var y = (i / 32) | 0;
-            if (
-              x < bkg_tiles_dirty.x1 ||
-              y < bkg_tiles_dirty.y1 ||
-              x > bkg_tiles_dirty.x2 ||
-              y > bkg_tiles_dirty.y2
-            ) {
-              continue;
-            }
-            draw_tile_canvas(buffer_ctx, x, y, bkg_tiles[i], bkg_data_canvas);
+            bkg_tiles_dirty[i] = false;
           }
         }
-        buffer_ctx.strokeStyle = "red";
-        buffer_ctx.lineWidth = 2;
-        buffer_ctx.strokeRect(
-          SCX_REG - 1,
-          SCY_REG - 1,
-          SCREEN_WIDTH + 2,
-          SCREEN_HEIGHT + 2
-        );
-        buffer_ctx.strokeRect(
-          SCX_REG - 1,
-          SCY_REG - 1 - BUFFER_WIDTH,
-          SCREEN_WIDTH + 2,
-          SCREEN_HEIGHT + 2
-        );
-        buffer_ctx.strokeRect(
-          SCX_REG - 1 - BUFFER_WIDTH,
-          SCY_REG - 1,
-          SCREEN_WIDTH + 2,
-          SCREEN_HEIGHT + 2
-        );
-        buffer_ctx.strokeRect(
-          SCX_REG - 1 - BUFFER_WIDTH,
-          SCY_REG - 1 - BUFFER_WIDTH,
-          SCREEN_WIDTH + 2,
-          SCREEN_HEIGHT + 2
-        );
       };
 
-      const redraw_window_canvas = function(force) {
+      const redraw_window_canvas = function() {
         var i;
-        if (force) {
-          for (i = 0; i < BUFFER_SIZE; i++) {
+        for (i = 0; i < BUFFER_SIZE; i++) {
+          if (win_tiles_dirty[i]) {
             draw_tile_canvas(
               window_ctx,
               i % 32,
@@ -431,46 +453,54 @@
               win_tiles[i],
               bkg_data_canvas
             );
-          }
-        } else {
-          for (i = 0; i < BUFFER_SIZE; i++) {
-            var x = i % 32;
-            var y = (i / 32) | 0;
-            if (
-              x < win_tiles_dirty.x1 ||
-              y < win_tiles_dirty.y1 ||
-              x > win_tiles_dirty.x2 ||
-              y > win_tiles_dirty.y2
-            ) {
-              continue;
-            }
-            draw_tile_canvas(window_ctx, x, y, win_tiles[i], bkg_data_canvas);
+            win_tiles_dirty[i] = false;
           }
         }
-        window_ctx.strokeStyle = "red";
-        window_ctx.lineWidth = 2;
-        window_ctx.strokeRect(
-          -1,
-          -1,
-          SCREEN_WIDTH + 2 + 8 - WX_REG,
-          SCREEN_HEIGHT + 2 - WY_REG
-        );
+      };
+
+      const redraw_sprite_canvas = function() {
+        sprite_canvas.width = sprite_canvas.width;
+
+        // Draw sprites
+        for (var si = 0; si < MAX_SPRITES; si++) {
+          var i = sorted_sprites[si];
+          var t = sprite_tiles[i];
+          sprite_ctx.save();
+          sprite_ctx.translate(si * TILE_SIZE, 0);
+          if (sprite_props[i] & S_FLIPX) {
+            sprite_ctx.scale(-1, 1);
+            sprite_ctx.translate(-8, 0);
+          }
+          if (sprite_props[i] & S_FLIPY) {
+            sprite_ctx.scale(1, -1);
+            sprite_ctx.translate(0, -16);
+          }
+
+          var palette_offset = sprite_props[i] & S_PALETTE ? 128 : 0;
+          sprite_ctx.drawImage(
+            sprite_data_canvas,
+            ((t / 2) | 0) % 16 * 8,
+            palette_offset + ((t / 32) | 0) * 16,
+            8,
+            16,
+            0,
+            0,
+            8,
+            16
+          );
+          sprite_ctx.restore();
+        }
       };
 
       function render() {
-        if (bkg_data_dirty) {
-          redraw_bkg_tiles();
-        }
+        canvas.width = canvas.width;
 
-        redraw_buffer_canvas(bkg_data_dirty);
-        redraw_window_canvas(bkg_data_dirty);
+        redraw_gfx_tiles();
+        redraw_buffer_canvas();
+        redraw_window_canvas();
+        redraw_sprite_canvas();
 
-        if (bkg_data_dirty) {
-          bkg_data_dirty = false;
-        }
-
-        reset_dirty_tiles();
-
+        // Draw screen
         for (var ly = 0; ly < 144; ly++) {
           if ((ly === LYC_REG || LYC_REG === 255) && lcd_fn) {
             Module.dynCall_v(lcd_fn);
@@ -490,6 +520,34 @@
           }
         }
 
+        buffer_debug_ctx.drawImage(buffer_canvas, 0, 0);
+        buffer_debug_ctx.strokeStyle = "red";
+        buffer_debug_ctx.lineWidth = 2;
+        buffer_debug_ctx.strokeRect(
+          SCX_REG - 1,
+          SCY_REG - 1,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+        buffer_debug_ctx.strokeRect(
+          SCX_REG - 1,
+          SCY_REG - 1 - BUFFER_WIDTH,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+        buffer_debug_ctx.strokeRect(
+          SCX_REG - 1 - BUFFER_WIDTH,
+          SCY_REG - 1,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+        buffer_debug_ctx.strokeRect(
+          SCX_REG - 1 - BUFFER_WIDTH,
+          SCY_REG - 1 - BUFFER_WIDTH,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );
+
         // Draw window
         ctx.drawImage(
           window_canvas,
@@ -502,41 +560,31 @@
           BUFFER_WIDTH,
           BUFFER_HEIGHT
         );
+        window_debug_ctx.drawImage(window_canvas, 0, 0);
+        window_debug_ctx.strokeStyle = "red";
+        window_debug_ctx.lineWidth = 2;
+        window_debug_ctx.strokeRect(
+          -1,
+          -1,
+          SCREEN_WIDTH + 2 + 8 - WX_REG,
+          SCREEN_HEIGHT + 2 - WY_REG
+        );
+
+        // Draw sprites
         for (var si = 0; si < MAX_SPRITES; si++) {
           var i = sorted_sprites[si];
-
-          var t = sprite_tiles[i];
-          ctx.save();
-          ctx.translate(sprite_x[i] - 4, sprite_y[i] - 16);
-          if (sprite_props[i] & S_FLIPX) {
-            ctx.scale(-1, 1);
-          }
-          ctx.translate(-4, 0);
-
           ctx.drawImage(
-            sprite_data_canvas,
-            ((t / 2) | 0) % 16 * 8,
-            ((t / 32) | 0) * 16,
+            sprite_canvas,
+            i * 8,
+            0,
             8,
             16,
-            0,
-            0,
+            sprite_x[i] - 8,
+            sprite_y[i] - 16,
             8,
             16
           );
-          ctx.restore();
         }
-      }
-
-      function reset_dirty_tiles() {
-        bkg_tiles_dirty.x1 = 999;
-        bkg_tiles_dirty.x2 = -1;
-        bkg_tiles_dirty.y1 = 999;
-        bkg_tiles_dirty.y2 = -1;
-        win_tiles_dirty.x1 = 999;
-        win_tiles_dirty.x2 = -1;
-        win_tiles_dirty.y1 = 999;
-        win_tiles_dirty.y2 = -1;
       }
 
       // Public Methods --------------------------------------------------------
@@ -546,11 +594,11 @@
       };
 
       this.get_buffer_canvas = function() {
-        return buffer_canvas;
+        return buffer_debug_canvas;
       };
 
       this.get_window_canvas = function() {
-        return window_canvas;
+        return window_debug_canvas;
       };
 
       this.get_bkg_data_canvas = function() {
@@ -559,6 +607,10 @@
 
       this.get_sprite_data_canvas = function() {
         return sprite_data_canvas;
+      };
+
+      this.get_sprite_canvas = function() {
+        return sprite_canvas;
       };
 
       this.set_colors = function(newColors) {
@@ -576,7 +628,6 @@
       };
 
       this.wait_vbl_done = function() {
-        ctx.fillRect(0, 0, 10, 10);
         render();
       };
 
@@ -585,73 +636,55 @@
       };
 
       this.set_bkg_data = function(first_tile, nb_tiles, data) {
-        for (var i = 0; i < nb_tiles * 16; i++) {
-          bkg_data[(i + first_tile * 16) % 4096] = data[i];
-          // Anything over 2048 is shared with sprite_data
-          if (i + first_tile * 16 > 2048) {
-            sprite_data[(i + first_tile * 16) % 4096] = data[i];
+        var i, d, ptr;
+        for (i = 0; i < nb_tiles; i++) {
+          for (d = 0; d < 16; d++) {
+            ptr = (d + (i + first_tile) * 16) % 4096;
+            gfx_data[ptr] = data[i * 16 + d];
+            gfx_data_dirty[i + first_tile] = true;
           }
         }
-        bkg_data_dirty = true;
-      };
-
-      this.set_bkg_tiles = function(x, y, w, h, tiles) {
-        for (var yi = 0; yi < h; yi++) {
-          for (var xi = 0; xi < w; xi++) {
-            bkg_tiles[x + xi + (y + yi) * 32] = tiles[xi + yi * w];
-          }
-        }
-        bkg_tiles_dirty.x1 = Math.min(bkg_tiles_dirty.x1, x);
-        bkg_tiles_dirty.y1 = Math.min(bkg_tiles_dirty.y1, y);
-        bkg_tiles_dirty.x2 = Math.max(bkg_tiles_dirty.x2, x + w);
-        bkg_tiles_dirty.y2 = Math.max(bkg_tiles_dirty.y2, y + h);
-      };
-
-      this.set_win_tiles = function(x, y, w, h, tiles) {
-        for (var yi = 0; yi < h; yi++) {
-          for (var xi = 0; xi < w; xi++) {
-            win_tiles[x + xi + (y + yi) * 32] = tiles[xi + yi * w];
-          }
-        }
-        win_tiles_dirty.x1 = Math.min(win_tiles_dirty.x1, x);
-        win_tiles_dirty.y1 = Math.min(win_tiles_dirty.y1, y);
-        win_tiles_dirty.x2 = Math.max(win_tiles_dirty.x2, x + w);
-        win_tiles_dirty.y2 = Math.max(win_tiles_dirty.y2, y + h);
       };
 
       this.set_sprite_data = function(first_tile, nb_tiles, data) {
-        var i;
-        for (i = 0; i < nb_tiles * 16; i++) {
-          sprite_data[i + first_tile * 16] = data[i];
+        var i, d, ptr;
+        for (i = 0; i < nb_tiles; i++) {
+          var offset = 256;
+          if (first_tile + i >= 128) {
+            offset = 0;
+          }
+          for (d = 0; d < 16; d++) {
+            ptr = 16 * offset + d + (i + first_tile) * 16;
+            gfx_data[ptr] = data[i * 16 + d];
+            gfx_data_dirty[offset + i + first_tile] = true;
+          }
         }
-        for (i = 0; i < nb_tiles * 16; i++) {
-          draw_tile_data(
-            sprite_data_ctx,
-            ((i / 2) | 0) % 16,
-            2 * ((i / 32) | 0) + i % 2,
-            i,
-            sprite_data,
-            obp0_palette
-          );
-          // Anything over 2048 is shared with bkg_data
-          if (i + first_tile * 16 > 2048) {
-            bkg_data[(i + first_tile * 16) % 4096] = data[i];
-            bkg_data_dirty = true;
+      };
+
+      this.set_bkg_tiles = function(x, y, w, h, tiles) {
+        var ptr;
+        for (var yi = 0; yi < h; yi++) {
+          for (var xi = 0; xi < w; xi++) {
+            ptr = x + xi + (y + yi) * 32;
+            bkg_tiles[ptr] = tiles[xi + yi * w];
+            bkg_tiles_dirty[ptr] = true;
+          }
+        }
+      };
+
+      this.set_win_tiles = function(x, y, w, h, tiles) {
+        var ptr;
+        for (var yi = 0; yi < h; yi++) {
+          for (var xi = 0; xi < w; xi++) {
+            ptr = x + xi + (y + yi) * 32;
+            win_tiles[ptr] = tiles[xi + yi * w];
+            win_tiles_dirty[ptr] = true;
           }
         }
       };
 
       this.set_sprite_prop = function(nb, prop) {
-        var i = nb * 16;
         sprite_props[nb] = prop;
-        draw_tile_data(
-          sprite_data_ctx,
-          ((i / 2) | 0) % 16,
-          2 * ((i / 32) | 0) + i % 2,
-          i,
-          sprite_data,
-          obp0_palette
-        );
       };
 
       this.move_sprite = function(nb, x, y) {
