@@ -21,6 +21,7 @@
   margin: 0px;
   color: #cfd8dc;
   user-select: none;
+  cursor: move;
 }
 
 .Window__Content {

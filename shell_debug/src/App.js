@@ -11,6 +11,22 @@ const windowTypes = {
   SCREEN_BUFFER: {
     title: "Screen Buffer",
     fn: g.get_buffer_canvas
+  },
+  WINDOW_BUFFER: {
+    title: "Window Buffer",
+    fn: g.get_window_canvas
+  },
+  BKG_DATA: {
+    title: "Tile Data",
+    fn: g.get_bkg_data_canvas
+  },
+  SPRITE_DATA: {
+    title: "Sprite Data",
+    fn: g.get_sprite_data_canvas
+  },
+  SPRITES: {
+    title: "Sprites",
+    fn: g.get_sprite_canvas
   }
 };
 
@@ -58,7 +74,6 @@ class App extends Component {
   }
 
   openWindow = () => {
-    alert(this.refs.winType.value);
     this.setState(
       {
         windows: [].concat(this.state.windows || [], {
@@ -111,7 +126,6 @@ class App extends Component {
     const { windows } = this.state;
     return (
       <div className="App">
-        <h1>Test</h1>
         <select ref="winType">
           {Object.keys(windowTypes).map((key, index) => (
             <option key={key} value={key}>
