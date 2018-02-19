@@ -16,7 +16,7 @@
 }
 
 .Window__Titlebar {
-  font-size: 14px;
+  font-size: 12px;
   padding: 5px 10px;
   margin: 0px;
   color: #cfd8dc;
@@ -26,6 +26,7 @@
 
 .Window__Content {
   background-color: #fff;
+  position: relative;
 }
 
 .Window__Close {

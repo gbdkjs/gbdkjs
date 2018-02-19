@@ -1,62 +1,113 @@
 import React, { Component } from "react";
+import AddWindowButton, { MenuItem } from "./AddWindowButton";
 import Window from "./Window";
-import logo from "./logo.svg";
+import Button from "./Button";
+import GBDKGame from "./GBDKGame";
+import GBDKTileMap from "./GBDKTileMap";
+import GBDKTileSet from "./GBDKTileSet";
+import GBDKSpriteData from "./GBDKSpriteData";
+import GBDKSprites from "./GBDKSprites";
 import g from "./gbdkjs-instance";
+import "./App.css";
+
+const clone = data => JSON.parse(JSON.stringify(data));
+
+const DEFAULT_WINDOWS = [
+  {
+    x: 50,
+    y: 50,
+    type: "GAME"
+  },
+  {
+    x: 250,
+    y: 50,
+    type: "SCREEN_BUFFER"
+  },
+  {
+    x: 546,
+    y: 50,
+    type: "WINDOW_BUFFER"
+  },
+  {
+    x: 842,
+    y: 50,
+    type: "SPRITE_DATA"
+  },
+  {
+    x: 66,
+    y: 254,
+    type: "BKG_DATA"
+  },
+  {
+    x: 250,
+    y: 366,
+    type: "SPRITES"
+  }
+];
 
 const windowTypes = {
-  GAME: {
-    title: "Game",
-    fn: g.get_canvas
-  },
-  SCREEN_BUFFER: {
-    title: "Screen Buffer",
-    fn: g.get_buffer_canvas
-  },
-  WINDOW_BUFFER: {
-    title: "Window Buffer",
-    fn: g.get_window_canvas
-  },
-  BKG_DATA: {
-    title: "Tile Data",
-    fn: g.get_bkg_data_canvas
-  },
-  SPRITE_DATA: {
-    title: "Sprite Data",
-    fn: g.get_sprite_data_canvas
-  },
-  SPRITES: {
-    title: "Sprites",
-    fn: g.get_sprite_canvas
-  }
+  GAME: "Game",
+  SCREEN_BUFFER: "Screen Buffer",
+  WINDOW_BUFFER: "Window Buffer",
+  BKG_DATA: "Tile Data",
+  SPRITE_DATA: "Sprite Data",
+  SPRITES: "Sprites"
 };
 
 class GBDKWindow extends Component {
-  componentDidMount() {
-    requestAnimationFrame(this.tick);
+  constructor() {
+    super();
+    this.state = {
+      title: ""
+    };
   }
 
-  tick = () => {
-    const canvas = this.refs.canvas;
-    const ctx = canvas.getContext("2d");
-    const gCanvas = windowTypes[this.props.type || "GAME"].fn();
-    canvas.width = gCanvas.width;
-    canvas.height = gCanvas.height;
-    ctx.drawImage(gCanvas, 0, 0);
-    requestAnimationFrame(this.tick);
+  setTitle = title => {
+    this.setState({ title });
   };
 
   render() {
-    const { x, y, z, onMove, onClose } = this.props;
+    const { x, y, z, onMove, onClose, type } = this.props;
+    const { title } = this.state;
     return (
       <Window
         x={x}
         y={y}
         z={z}
-        title={windowTypes[this.props.type || "GAME"].title}
+        title={title ? title : windowTypes[this.props.type]}
         onMove={onMove}
         onClose={onClose}
       >
-        <canvas ref="canvas" />
+        {type === "GAME" && <GBDKGame canvas={g.get_canvas()} />}
+        {type === "SCREEN_BUFFER" &&
+          <GBDKTileMap
+            canvas={g.get_buffer_canvas()}
+            tiles={g.get_bkg_tiles()}
+            setTitle={this.setTitle}
+          />}
+        {type === "WINDOW_BUFFER" &&
+          <GBDKTileMap
+            canvas={g.get_window_canvas()}
+            tiles={g.get_win_tiles()}
+            setTitle={this.setTitle}
+          />}
+        {type === "BKG_DATA" &&
+          <GBDKTileSet
+            canvas={g.get_bkg_data_canvas()}
+            setTitle={this.setTitle}
+          />}
+        {type === "SPRITE_DATA" &&
+          <GBDKSpriteData
+            canvas={g.get_sprite_data_canvas()}
+            setTitle={this.setTitle}
+          />}
+        {type === "SPRITES" &&
+          <GBDKSprites
+            canvas={g.get_sprite_canvas()}
+            tiles={g.get_sprite_tiles()}
+            props={g.get_sprite_props()}
+            setTitle={this.setTitle}
+          />}
       </Window>
     );
   }
@@ -66,21 +117,29 @@ class App extends Component {
   constructor() {
     super();
 
-    const storedState = JSON.parse(localStorage.getItem("state") || "{}");
-
-    this.state = {
-      windows: storedState.windows
-    };
+    try {
+      const storedState = JSON.parse(localStorage.getItem("state"));
+      if (!storedState || storedState.windows.length === 0) {
+        throw Error("No Stored State");
+      }
+      this.state = {
+        windows: storedState.windows
+      };
+    } catch (e) {
+      this.state = {
+        windows: clone(DEFAULT_WINDOWS)
+      };
+    }
   }
 
-  openWindow = () => {
+  openWindow = type => {
     this.setState(
       {
         windows: [].concat(this.state.windows || [], {
-          x: 10,
-          y: 10,
+          x: 30,
+          y: 20,
           z: 2,
-          type: this.refs.winType.value
+          type
         })
       },
       () => this.saveState()
@@ -106,11 +165,23 @@ class App extends Component {
   };
 
   closeWindow = index => {
-    this.setState({
-      windows: this.state.windows.filter((w, i) => {
-        return i !== index;
-      })
-    });
+    this.setState(
+      {
+        windows: this.state.windows.filter((w, i) => {
+          return i !== index;
+        })
+      },
+      () => this.saveState()
+    );
+  };
+
+  resetWindows = () => {
+    this.setState(
+      {
+        windows: clone(DEFAULT_WINDOWS)
+      },
+      () => this.saveState()
+    );
   };
 
   saveState = () => {
@@ -126,16 +197,22 @@ class App extends Component {
     const { windows } = this.state;
     return (
       <div className="App">
-        <select ref="winType">
-          {Object.keys(windowTypes).map((key, index) => (
-            <option key={key} value={key}>
-              {windowTypes[key].title}
-            </option>
-          ))}
-        </select>
-        <button onClick={() => this.openWindow()}>+</button>
+        <AddWindowButton>
+          {Object.keys(windowTypes).map((key, index) =>
+            <MenuItem
+              key={key}
+              value={key}
+              onClick={() => {
+                this.openWindow(key);
+              }}
+            >
+              {windowTypes[key]}
+            </MenuItem>
+          )}
+        </AddWindowButton>
+        <Button onClick={this.resetWindows}>Reset</Button>
         {windows &&
-          windows.map((w, index) => (
+          windows.map((w, index) =>
             <GBDKWindow
               key={index}
               x={w.x}
@@ -145,7 +222,7 @@ class App extends Component {
               onMove={(x, y) => this.moveWindow(index, x, y)}
               onClose={() => this.closeWindow(index)}
             />
-          ))}
+          )}
       </div>
     );
   }

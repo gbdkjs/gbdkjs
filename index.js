@@ -621,6 +621,22 @@
         return testBank === 0 || testBank === bank;
       };
 
+      this.get_bkg_tiles = function() {
+        return bkg_tiles;
+      };
+
+      this.get_win_tiles = function() {
+        return win_tiles;
+      };
+
+      this.get_sprite_tiles = function() {
+        return sprite_tiles;
+      };
+
+      this.get_sprite_props = function() {
+        return sprite_props;
+      };
+
       // GBDK API --------------------------------------------------------------
 
       this.SWITCH_ROM_MBC5 = function(newBank) {

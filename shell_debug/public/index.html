@@ -4,131 +4,17 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>GBDK.js</title>
-    <style>
-      body {
-        background-color: #263238;
-        text-align: center;
-      }    
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      textarea.emscripten { font-family: monospace; }
-      div.emscripten { text-align: center; }
-      div.emscripten_border { border: 1px solid black; }
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
-      canvas.emscripten { border: 0px none; background-color: black; }
-
-      #game {
-        text-align: center;
-      }
-
-      #gameDebug {
-        display: inline-block;
-        margin: 0px auto;
-      }
-
-      #gameDebug section {
-        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-        display: inline-block;
-        vertical-align: top;
-        margin-top: 20px;
-        margin-right: 20px;
-        padding: 3px;
-        background-color: #455a64;
-        border-radius: 6px;
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        border-top: 1px solid #607D8B;
-      }
-
-      #gameDebug table {
-        width: 100%;
-        font-family: monospace;
-        font-size: 12px; 
-        background-color: #fff;
-        border-collapse: collapse;    
-        text-align: right; 
-      }
-
-      #gameDebug table th {
-        text-align: left;
-      }
-
-      #gameDebug table tr:nth-child(even) {
-        background-color: #eceff1;
-      }      
-
-      #registerDebug {
-        width: 30%;
-      }
-
-      #console {
-        width: 60%;
-      }
-
-      #console textarea {
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      #gameDebug section h2 {
-        font-size: 14px;
-        padding: 5px 10px;
-        margin: 0px;
-        color: #CFD8DC;        
-      }
-
-      #gameDebug section canvas {
-        background-color: #fff;
-        display: block;
-      }
-
-      .spinner {
-        height: 50px;
-        width: 50px;
-        margin: 0px auto;
-        -webkit-animation: rotation .8s linear infinite;
-        -moz-animation: rotation .8s linear infinite;
-        -o-animation: rotation .8s linear infinite;
-        animation: rotation 0.8s linear infinite;
-        border-left: 10px solid rgb(0,150,240);
-        border-right: 10px solid rgb(0,150,240);
-        border-bottom: 10px solid rgb(0,150,240);
-        border-top: 10px solid rgb(100,0,200);
-        border-radius: 100%;
-        background-color: rgb(200,100,250);
-      }
-      @-webkit-keyframes rotation {
-        from {-webkit-transform: rotate(0deg);}
-        to {-webkit-transform: rotate(360deg);}
-      }
-      @-moz-keyframes rotation {
-        from {-moz-transform: rotate(0deg);}
-        to {-moz-transform: rotate(360deg);}
-      }
-      @-o-keyframes rotation {
-        from {-o-transform: rotate(0deg);}
-        to {-o-transform: rotate(360deg);}
-      }
-      @keyframes rotation {
-        from {transform: rotate(0deg);}
-        to {transform: rotate(360deg);}
-      }
-
-    </style>
   </head>
   <body>
-
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
     <div id="root"></div>
-
     <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>gbdk.js</strong></center></figure>
     <div class="emscripten" id="status">Downloading...</div>
     <div class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>  
     </div>
-
     <script type='text/javascript'>
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
@@ -138,20 +24,9 @@
         preRun: [],
         postRun: [],
         print: (function() {
-          var element = document.getElementById('output');
-          if (element) element.value = ''; // clear browser cache
           return function(text) {
             if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-            // These replacements are necessary if you render to raw HTML
-            //text = text.replace(/&/g, "&amp;");
-            //text = text.replace(/</g, "&lt;");
-            //text = text.replace(/>/g, "&gt;");
-            //text = text.replace('\n', '<br>', 'g');
             console.log(text);
-            if (element) {
-              element.value += text + "\n";
-              element.scrollTop = element.scrollHeight; // focus on bottom
-            }
           };
         })(),
         printErr: function(text) {

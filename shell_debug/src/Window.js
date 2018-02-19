@@ -24,7 +24,6 @@ class Window extends Component {
   };
 
   endDrag = () => {
-    console.log("END");
     this.setState({ dragging: false });
   };
 
@@ -51,7 +50,9 @@ class Window extends Component {
             x
           </div>
         </div>
-        <div className="Window__Content">{children}</div>
+        <div className="Window__Content">
+          {children}
+        </div>
       </div>
     );
   }
