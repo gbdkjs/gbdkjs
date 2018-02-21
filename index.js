@@ -27,6 +27,8 @@
     const S_FLIPX = 0x20;
     const S_FLIPY = 0x40;
 
+    const SHOW_SPRITES = 0x02;
+
     const TILE_SIZE = 8;
     const DATA_SIZE = 256;
     const NUM_BKG_TILES = 256;
@@ -121,6 +123,16 @@
         },
         set: function(value) {
           WY_REG = (256 + value) % 256;
+        }
+      });
+
+      var LCDC_REG = 0;
+      Object.defineProperty(this, "LCDC_REG", {
+        get: function() {
+          return LCDC_REG;
+        },
+        set: function(value) {
+          LCDC_REG = (256 + value) % 256;
         }
       });
 
@@ -571,19 +583,21 @@
         );
 
         // Draw sprites
-        for (var si = 0; si < MAX_SPRITES; si++) {
-          var i = sorted_sprites[si];
-          ctx.drawImage(
-            sprite_canvas,
-            i * 8,
-            0,
-            8,
-            16,
-            sprite_x[i] - 8,
-            sprite_y[i] - 16,
-            8,
-            16
-          );
+        if (LCDC_REG & SHOW_SPRITES) {
+          for (var si = 0; si < MAX_SPRITES; si++) {
+            var i = sorted_sprites[si];
+            ctx.drawImage(
+              sprite_canvas,
+              i * 8,
+              0,
+              8,
+              16,
+              sprite_x[i] - 8,
+              sprite_y[i] - 16,
+              8,
+              16
+            );
+          }
         }
       }
 
