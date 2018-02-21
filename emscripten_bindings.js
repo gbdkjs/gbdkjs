@@ -93,12 +93,13 @@ mergeInto(LibraryManager.library, {
     g.set_sprite_tile(uint(nb), uint(tile));
   },
 
-  update_registers: function(
+  emscripten_update_registers: function(
     SCX_REG,
     SCY_REG,
     WX_REG,
     WY_REG,
     LYC_REG,
+    LCDC_REG,
     BGP_REG,
     OBP0_REG,
     OBP1_REG
@@ -117,6 +118,9 @@ mergeInto(LibraryManager.library, {
     }
     if (LYC_REG !== g.LYC_REG) {
       g.LYC_REG = uint(LYC_REG);
+    }
+    if (LCDC_REG !== g.LCDC_REG) {
+      g.LCDC_REG = uint(LCDC_REG);
     }
     if (BGP_REG !== g.BGP_REG) {
       g.BGP_REG = uint(BGP_REG);
