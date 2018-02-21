@@ -179,7 +179,7 @@
         },
         set: function(value) {
           var i;
-          if (value !== OBP0_REG) {
+          if (value !== OBP1_REG) {
             OBP1_REG = value;
             obp1_palette = [
               colors[4],
