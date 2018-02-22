@@ -1,0 +1,45 @@
+.Window {
+  position: fixed;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+    Helvetica, Arial, "Lucida Grande", sans-serif;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 20px;
+  margin-right: 20px;
+  padding: 3px;
+  background-color: #455a64;
+  border-radius: 6px;
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  border-top: 1px solid #607d8b;
+}
+
+.Window__Titlebar {
+  font-size: 12px;
+  padding: 5px 10px;
+  margin: 0px;
+  color: #cfd8dc;
+  user-select: none;
+  cursor: move;
+}
+
+.Window__Content {
+  background-color: #fff;
+  position: relative;
+}
+
+.Window__Close {
+  border: 1px solid #37474f;
+  display: block;
+  float: right;
+  padding: 3px 8px;
+  margin-top: -6px;
+  margin-right: -9px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.Window__Close:hover {
+  background-color: #37474f;
+}

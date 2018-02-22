@@ -1,0 +1,121 @@
+.GBDKControls {
+  width: 256px;
+  height: 128px;
+  position: relative;
+  background-color: #455a64;
+}
+
+.GBDKControls__Dpad {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  background-color: #90a4ae;
+  width: 60px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.GBDKControls__Dpad:after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  background-color: #90a4ae;
+  width: 20px;
+  height: 60px;
+  border-radius: 4px;
+}
+
+.GBDKControls__Dpad__Up,
+.GBDKControls__Dpad__Down,
+.GBDKControls__Dpad__Left,
+.GBDKControls__Dpad__Right {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  z-index: 20;
+  transform: scale(0.8);
+}
+
+.GBDKControls__Dpad__Up {
+  top: -20px;
+  left: 20px;
+}
+
+.GBDKControls__Dpad__Down {
+  top: 20px;
+  left: 20px;
+}
+
+.GBDKControls__Dpad__Left {
+  top: 0px;
+  left: 0px;
+}
+
+.GBDKControls__Dpad__Right {
+  top: 0px;
+  left: 40px;
+}
+
+.GBDKControls__A,
+.GBDKControls__B {
+  position: absolute;
+  background-color: #90a4ae;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+}
+
+.GBDKControls__A {
+  top: 25px;
+  right: 20px;
+}
+
+.GBDKControls__B {
+  top: 40px;
+  right: 54px;
+}
+
+.GBDKControls__Start,
+.GBDKControls__Select {
+  position: absolute;
+  background-color: #90a4ae;
+  width: 30px;
+  height: 10px;
+  border-radius: 10px;
+  transform: rotate(-30deg);
+}
+
+.GBDKControls__Dpad__Up:hover,
+.GBDKControls__Dpad__Down:hover,
+.GBDKControls__Dpad__Left:hover,
+.GBDKControls__Dpad__Right:hover,
+.GBDKControls__A:hover,
+.GBDKControls__B:hover,
+.GBDKControls__Start:hover,
+.GBDKControls__Select:hover {
+  background-color: #607d8b;
+  cursor: pointer;
+}
+
+.GBDKControls__Dpad__Up.GBDKControls--Selected,
+.GBDKControls__Dpad__Down.GBDKControls--Selected,
+.GBDKControls__Dpad__Left.GBDKControls--Selected,
+.GBDKControls__Dpad__Right.GBDKControls--Selected,
+.GBDKControls__A.GBDKControls--Selected,
+.GBDKControls__B.GBDKControls--Selected,
+.GBDKControls__Start.GBDKControls--Selected,
+.GBDKControls__Select.GBDKControls--Selected {
+  background-color: #263238;
+}
+
+.GBDKControls__Start {
+  left: 122px;
+  top: 100px;
+}
+
+.GBDKControls__Select {
+  left: 82px;
+  top: 100px;
+}

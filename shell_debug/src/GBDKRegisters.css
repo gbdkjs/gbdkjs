@@ -1,0 +1,21 @@
+.GBDKRegisters {
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 300px;
+  font-family: monospace;
+}
+
+.GBDKRegisters td {
+  padding: 4px;
+  text-align: right;
+}
+
+.GBDKRegisters th {
+  padding: 4px;
+  text-align: left;
+}
+
+.GBDKRegisters tr:nth-child(odd) td,
+.GBDKRegisters tr:nth-child(odd) th {
+  background-color: #efefef;
+}

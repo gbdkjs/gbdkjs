@@ -1,0 +1,16 @@
+.Button {
+  display: inline-block;
+  border: 1px solid #37474f;
+  color: #cfd8dc;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  margin-right: 10px;
+  background-color: #37474f;
+}
+
+.Button:hover {
+  background-color: #192125;
+  border-color: #192125;
+}
