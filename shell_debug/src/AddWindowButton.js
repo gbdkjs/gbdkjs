@@ -34,8 +34,11 @@ export default class AddWindowButton extends Component {
       <div className="AddWindowButton">
         <Button onClick={this.toggle}>+ Panel</Button>
         {open &&
-          <div className="AddWindow__Menu" onClick={this.toggle}>
-            {children}
+          <div>
+            <div className="AddWindow__MenuOverlay" onClick={this.toggle} />
+            <div className="AddWindow__Menu" onClick={this.toggle}>
+              {children}
+            </div>
           </div>}
       </div>
     );
