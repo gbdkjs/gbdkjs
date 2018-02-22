@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ShelfPack from "@mapbox/shelf-pack";
 import AddWindowButton, { MenuItem } from "./AddWindowButton";
 import Window from "./Window";
 import Button from "./Button";
@@ -10,7 +11,7 @@ import GBDKSprites from "./GBDKSprites";
 import GBDKRegisters from "./GBDKRegisters";
 import GBDKControls from "./GBDKControls";
 import g from "./gbdkjs-instance";
-import Packer from "./lib/binPack";
+import shuffle from "./lib/shuffle";
 import "./App.css";
 
 const clone = data => JSON.parse(JSON.stringify(data));
@@ -70,19 +71,54 @@ const windowTypes = {
 };
 
 const packWindows = () => {
-  const packer = new Packer(window.innerWidth - 40, window.innerHeight - 80);
-  let windows = clone(DEFAULT_WINDOWS).map(window => {
-    window.h += 32 + 40;
-    window.w += 40;
-    return window;
+  const packer = new ShelfPack(window.innerWidth - 40, window.innerHeight - 80);
+  let results = [];
+  let windows = clone(DEFAULT_WINDOWS);
+  let attempts = 0;
+  let bestResults = [];
+
+  while (results.length !== DEFAULT_WINDOWS.length && attempts < 10) {
+    results = packer.pack(
+      windows.map(win => ({
+        h: win.h + 32 + 20,
+        w: win.w + 20
+      }))
+    );
+    if (results.length > bestResults.length) {
+      bestResults = results.map(bin => {
+        return {
+          x: bin.x + 20,
+          y: bin.y + 60,
+          type: windows[bin.id - 1].type,
+          w: windows[bin.id - 1].w,
+          h: windows[bin.id - 1].h
+        };
+      });
+    }
+    attempts++;
+    if (results.length !== DEFAULT_WINDOWS.length && attempts < 10) {
+      windows = [].concat(
+        clone(DEFAULT_WINDOWS)[0],
+        shuffle(clone(DEFAULT_WINDOWS).slice(1))
+      );
+      packer.clear();
+    }
+  }
+
+  // Center best results
+  const maxX = bestResults.reduce((memo, win) => {
+    return win.x + win.w > memo ? win.x + win.w : memo;
+  }, 0);
+
+  const xOffset = (window.innerWidth - 20 - maxX) / 2;
+
+  console.log({ maxX, xOffset });
+
+  return bestResults.map(result => {
+    return Object.assign({}, result, {
+      x: result.x + xOffset
+    });
   });
-  packer.fit(windows);
-  windows = windows.map(window => {
-    window.x = window.fit ? window.fit.x + 20 : -1000;
-    window.y = window.fit ? window.fit.y + 60 : -1000;
-    return window;
-  });
-  return windows;
 };
 
 class GBDKWindow extends Component {
@@ -110,44 +146,38 @@ class GBDKWindow extends Component {
         onClose={onClose}
       >
         {type === "GAME" && <GBDKGame canvas={g.get_canvas()} />}
-        {type === "SCREEN_BUFFER" && (
+        {type === "SCREEN_BUFFER" &&
           <GBDKTileMap
             canvas={g.get_buffer_canvas()}
             tiles={g.get_bkg_tiles()}
             setTitle={this.setTitle}
-          />
-        )}
-        {type === "WINDOW_BUFFER" && (
+          />}
+        {type === "WINDOW_BUFFER" &&
           <GBDKTileMap
             canvas={g.get_window_canvas()}
             tiles={g.get_win_tiles()}
             setTitle={this.setTitle}
-          />
-        )}
-        {type === "BKG_DATA" && (
+          />}
+        {type === "BKG_DATA" &&
           <GBDKTileSet
             canvas={g.get_bkg_data_canvas()}
             setTitle={this.setTitle}
-          />
-        )}
-        {type === "SPRITE_DATA" && (
+          />}
+        {type === "SPRITE_DATA" &&
           <GBDKSpriteData
             canvas={g.get_sprite_data_canvas()}
             setTitle={this.setTitle}
-          />
-        )}
-        {type === "SPRITES" && (
+          />}
+        {type === "SPRITES" &&
           <GBDKSprites
             canvas={g.get_sprite_canvas()}
             tiles={g.get_sprite_tiles()}
             props={g.get_sprite_props()}
             setTitle={this.setTitle}
-          />
-        )}
+          />}
         {type === "REGISTERS" && <GBDKRegisters gbdk={g} />}
-        {type === "CONTROLS" && (
-          <GBDKControls gbdk={g} setTitle={this.setTitle} />
-        )}
+        {type === "CONTROLS" &&
+          <GBDKControls gbdk={g} setTitle={this.setTitle} />}
       </Window>
     );
   }
@@ -238,7 +268,7 @@ class App extends Component {
     return (
       <div className="App">
         <AddWindowButton>
-          {Object.keys(windowTypes).map((key, index) => (
+          {Object.keys(windowTypes).map((key, index) =>
             <MenuItem
               key={key}
               value={key}
@@ -248,11 +278,11 @@ class App extends Component {
             >
               {windowTypes[key]}
             </MenuItem>
-          ))}
+          )}
         </AddWindowButton>
         <Button onClick={this.resetWindows}>Reset</Button>
         {windows &&
-          windows.map((w, index) => (
+          windows.map((w, index) =>
             <GBDKWindow
               key={index}
               x={w.x}
@@ -262,7 +292,7 @@ class App extends Component {
               onMove={(x, y) => this.moveWindow(index, x, y)}
               onClose={() => this.closeWindow(index)}
             />
-          ))}
+          )}
       </div>
     );
   }
