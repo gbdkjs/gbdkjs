@@ -34,9 +34,7 @@ export default class GBDKSprites extends Component {
     const { tiles, props } = this.props;
     const pos = getCoords(e.currentTarget);
     const x = e.pageX - pos.left;
-    const y = e.pageY - pos.top;
     const tX = Math.floor(x / 8) % 40;
-    const tY = Math.floor(y / 8);
     const tile = tX;
     this.setState({ tile });
     this.props.setTitle(

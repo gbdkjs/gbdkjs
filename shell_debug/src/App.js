@@ -7,6 +7,8 @@ import GBDKTileMap from "./GBDKTileMap";
 import GBDKTileSet from "./GBDKTileSet";
 import GBDKSpriteData from "./GBDKSpriteData";
 import GBDKSprites from "./GBDKSprites";
+import GBDKRegisters from "./GBDKRegisters";
+import GBDKControls from "./GBDKControls";
 import g from "./gbdkjs-instance";
 import "./App.css";
 
@@ -42,6 +44,16 @@ const DEFAULT_WINDOWS = [
     x: 250,
     y: 366,
     type: "SPRITES"
+  },
+  {
+    x: 1010,
+    y: 50,
+    type: "REGISTERS"
+  },
+  {
+    x: 610,
+    y: 366,
+    type: "CONTROLS"
   }
 ];
 
@@ -51,7 +63,9 @@ const windowTypes = {
   WINDOW_BUFFER: "Window Buffer",
   BKG_DATA: "Tile Data",
   SPRITE_DATA: "Sprite Data",
-  SPRITES: "Sprites"
+  SPRITES: "Sprites",
+  REGISTERS: "Registers",
+  CONTROLS: "Controls"
 };
 
 class GBDKWindow extends Component {
@@ -108,6 +122,9 @@ class GBDKWindow extends Component {
             props={g.get_sprite_props()}
             setTitle={this.setTitle}
           />}
+        {type === "REGISTERS" && <GBDKRegisters gbdk={g} />}
+        {type === "CONTROLS" &&
+          <GBDKControls gbdk={g} setTitle={this.setTitle} />}
       </Window>
     );
   }

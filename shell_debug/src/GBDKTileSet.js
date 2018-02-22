@@ -27,7 +27,6 @@ export default class GBDKTileMap extends Component {
   };
 
   onMouseMove = e => {
-    const { tiles } = this.props;
     const pos = getCoords(e.currentTarget);
     const x = e.pageX - pos.left;
     const y = e.pageY - pos.top;
