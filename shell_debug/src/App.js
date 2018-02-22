@@ -10,50 +10,51 @@ import GBDKSprites from "./GBDKSprites";
 import GBDKRegisters from "./GBDKRegisters";
 import GBDKControls from "./GBDKControls";
 import g from "./gbdkjs-instance";
+import Packer from "./lib/binPack";
 import "./App.css";
 
 const clone = data => JSON.parse(JSON.stringify(data));
 
 const DEFAULT_WINDOWS = [
   {
-    x: 50,
-    y: 50,
+    w: 160,
+    h: 144,
     type: "GAME"
   },
   {
-    x: 250,
-    y: 50,
+    w: 256,
+    h: 256,
     type: "SCREEN_BUFFER"
   },
   {
-    x: 546,
-    y: 50,
+    w: 256,
+    h: 256,
     type: "WINDOW_BUFFER"
   },
   {
-    x: 842,
-    y: 50,
+    w: 128,
+    h: 256,
     type: "SPRITE_DATA"
   },
   {
-    x: 66,
-    y: 254,
+    w: 128,
+    h: 128,
     type: "BKG_DATA"
   },
   {
-    x: 250,
-    y: 366,
-    type: "SPRITES"
-  },
-  {
-    x: 1010,
-    y: 50,
+    w: 300,
+    h: 198,
     type: "REGISTERS"
   },
   {
-    x: 610,
-    y: 366,
+    w: 256,
+    h: 128,
     type: "CONTROLS"
+  },
+  {
+    w: 320,
+    h: 16,
+    type: "SPRITES"
   }
 ];
 
@@ -66,6 +67,22 @@ const windowTypes = {
   SPRITES: "Sprites",
   REGISTERS: "Registers",
   CONTROLS: "Controls"
+};
+
+const packWindows = () => {
+  const packer = new Packer(window.innerWidth - 40, window.innerHeight - 80);
+  let windows = clone(DEFAULT_WINDOWS).map(window => {
+    window.h += 32 + 40;
+    window.w += 40;
+    return window;
+  });
+  packer.fit(windows);
+  windows = windows.map(window => {
+    window.x = window.fit ? window.fit.x + 20 : -1000;
+    window.y = window.fit ? window.fit.y + 60 : -1000;
+    return window;
+  });
+  return windows;
 };
 
 class GBDKWindow extends Component {
@@ -93,38 +110,44 @@ class GBDKWindow extends Component {
         onClose={onClose}
       >
         {type === "GAME" && <GBDKGame canvas={g.get_canvas()} />}
-        {type === "SCREEN_BUFFER" &&
+        {type === "SCREEN_BUFFER" && (
           <GBDKTileMap
             canvas={g.get_buffer_canvas()}
             tiles={g.get_bkg_tiles()}
             setTitle={this.setTitle}
-          />}
-        {type === "WINDOW_BUFFER" &&
+          />
+        )}
+        {type === "WINDOW_BUFFER" && (
           <GBDKTileMap
             canvas={g.get_window_canvas()}
             tiles={g.get_win_tiles()}
             setTitle={this.setTitle}
-          />}
-        {type === "BKG_DATA" &&
+          />
+        )}
+        {type === "BKG_DATA" && (
           <GBDKTileSet
             canvas={g.get_bkg_data_canvas()}
             setTitle={this.setTitle}
-          />}
-        {type === "SPRITE_DATA" &&
+          />
+        )}
+        {type === "SPRITE_DATA" && (
           <GBDKSpriteData
             canvas={g.get_sprite_data_canvas()}
             setTitle={this.setTitle}
-          />}
-        {type === "SPRITES" &&
+          />
+        )}
+        {type === "SPRITES" && (
           <GBDKSprites
             canvas={g.get_sprite_canvas()}
             tiles={g.get_sprite_tiles()}
             props={g.get_sprite_props()}
             setTitle={this.setTitle}
-          />}
+          />
+        )}
         {type === "REGISTERS" && <GBDKRegisters gbdk={g} />}
-        {type === "CONTROLS" &&
-          <GBDKControls gbdk={g} setTitle={this.setTitle} />}
+        {type === "CONTROLS" && (
+          <GBDKControls gbdk={g} setTitle={this.setTitle} />
+        )}
       </Window>
     );
   }
@@ -144,7 +167,7 @@ class App extends Component {
       };
     } catch (e) {
       this.state = {
-        windows: clone(DEFAULT_WINDOWS)
+        windows: packWindows()
       };
     }
   }
@@ -195,7 +218,7 @@ class App extends Component {
   resetWindows = () => {
     this.setState(
       {
-        windows: clone(DEFAULT_WINDOWS)
+        windows: packWindows()
       },
       () => this.saveState()
     );
@@ -215,7 +238,7 @@ class App extends Component {
     return (
       <div className="App">
         <AddWindowButton>
-          {Object.keys(windowTypes).map((key, index) =>
+          {Object.keys(windowTypes).map((key, index) => (
             <MenuItem
               key={key}
               value={key}
@@ -225,11 +248,11 @@ class App extends Component {
             >
               {windowTypes[key]}
             </MenuItem>
-          )}
+          ))}
         </AddWindowButton>
         <Button onClick={this.resetWindows}>Reset</Button>
         {windows &&
-          windows.map((w, index) =>
+          windows.map((w, index) => (
             <GBDKWindow
               key={index}
               x={w.x}
@@ -239,7 +262,7 @@ class App extends Component {
               onMove={(x, y) => this.moveWindow(index, x, y)}
               onClose={() => this.closeWindow(index)}
             />
-          )}
+          ))}
       </div>
     );
   }
