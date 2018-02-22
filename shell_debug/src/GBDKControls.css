@@ -2,13 +2,14 @@
   width: 256px;
   height: 128px;
   position: relative;
+  background-color: #455a64;
 }
 
 .GBDKControls__Dpad {
   position: absolute;
   top: 40px;
   left: 20px;
-  background-color: #aaa;
+  background-color: #90a4ae;
   width: 60px;
   height: 20px;
   border-radius: 4px;
@@ -19,7 +20,7 @@
   position: absolute;
   top: -20px;
   left: 20px;
-  background-color: #aaa;
+  background-color: #90a4ae;
   width: 20px;
   height: 60px;
   border-radius: 4px;
@@ -60,7 +61,7 @@
 .GBDKControls__A,
 .GBDKControls__B {
   position: absolute;
-  background-color: #aaa;
+  background-color: #90a4ae;
   width: 30px;
   height: 30px;
   border-radius: 30px;
@@ -79,7 +80,7 @@
 .GBDKControls__Start,
 .GBDKControls__Select {
   position: absolute;
-  background-color: #aaa;
+  background-color: #90a4ae;
   width: 30px;
   height: 10px;
   border-radius: 10px;
@@ -94,7 +95,7 @@
 .GBDKControls__B:hover,
 .GBDKControls__Start:hover,
 .GBDKControls__Select:hover {
-  background-color: #777;
+  background-color: #607d8b;
   cursor: pointer;
 }
 
@@ -106,7 +107,7 @@
 .GBDKControls__B.GBDKControls--Selected,
 .GBDKControls__Start.GBDKControls--Selected,
 .GBDKControls__Select.GBDKControls--Selected {
-  background-color: #333;
+  background-color: #263238;
 }
 
 .GBDKControls__Start {

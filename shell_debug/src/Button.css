@@ -7,6 +7,7 @@
   cursor: pointer;
   user-select: none;
   margin-right: 10px;
+  background-color: #37474f;
 }
 
 .Button:hover {
