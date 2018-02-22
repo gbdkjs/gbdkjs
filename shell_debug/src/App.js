@@ -112,8 +112,6 @@ const packWindows = () => {
 
   const xOffset = (window.innerWidth - 20 - maxX) / 2;
 
-  console.log({ maxX, xOffset });
-
   return bestResults.map(result => {
     return Object.assign({}, result, {
       x: result.x + xOffset
