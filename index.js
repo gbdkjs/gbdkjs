@@ -584,7 +584,7 @@
 
         // Draw sprites
         if (LCDC_REG & SHOW_SPRITES) {
-          for (var si = 0; si < MAX_SPRITES; si++) {
+          for (var si = MAX_SPRITES - 1; si >= 0; si--) {
             var i = sorted_sprites[si];
             ctx.drawImage(
               sprite_canvas,
@@ -650,6 +650,10 @@
       this.get_sprite_props = function() {
         return sprite_props;
       };
+
+      this.set_joypad = function(joy) {
+        joypad = joy;
+      }
 
       // GBDK API --------------------------------------------------------------
 
