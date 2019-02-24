@@ -1,9 +1,10 @@
 {
   "name": "gbdkjs",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepublish": "cp index.js shell_deploy/static/gbdk.js; cd shell_debug; npm run build;",
     "lint": "eslint index.js emscripten_bindings.js"
   },
   "author": "Chris Maltby",
