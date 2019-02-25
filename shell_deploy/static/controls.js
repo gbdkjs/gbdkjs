@@ -113,6 +113,9 @@ function bindDpad(el) {
 
 function bindKeyboard() {
   window.onkeydown = function(e) {
+    if((e.keyCode !== JS_KEY_CTRL && e.keyCode !== JS_KEY_ALT) && (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey)) {
+      return;
+    }
     if (e.keyCode === JS_KEY_LEFT || e.keyCode === JS_KEY_A) {
       joy |= J_LEFT;
     } else if (e.keyCode === JS_KEY_RIGHT || e.keyCode === JS_KEY_D) {
@@ -122,9 +125,7 @@ function bindKeyboard() {
     } else if (e.keyCode === JS_KEY_DOWN || e.keyCode === JS_KEY_S) {
       joy |= J_DOWN;
     } else if (
-      e.keyCode === JS_KEY_ENTER ||
-      e.keyCode === JS_KEY_K ||
-      e.keyCode === JS_KEY_X
+      e.keyCode === JS_KEY_ENTER 
     ) {
       joy |= J_START;
     } else if (
@@ -133,7 +134,10 @@ function bindKeyboard() {
       e.keyCode === JS_KEY_J
     ) {
       joy |= J_A;
-    } else if (e.keyCode === JS_KEY_CTRL) {
+    } else if (e.keyCode === JS_KEY_CTRL ||
+      e.keyCode === JS_KEY_K ||
+      e.keyCode === JS_KEY_X
+    ) {
       joy |= J_B;
     } else if (e.keyCode === JS_KEY_SHIFT) {
       joy |= J_SELECT;
