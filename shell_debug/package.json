@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mapbox/shelf-pack": "^3.1.0",
+    "@mapbox/shelf-pack": "^3.2.0",
     "classnames": "^2.2.5",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react-dom": "^16.2.1",
     "react-scripts": "1.1.1"
   },
   "scripts": {
