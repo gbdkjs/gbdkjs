@@ -33,8 +33,10 @@ export default class GBDKTileMap extends Component {
     const tX = Math.floor(x / 8) % 16;
     const tY = Math.floor(y / 8);
     const tile = tX + 16 * tY;
-    this.setState({ tile });
-    this.props.setTitle(`${tile} (${decHex(tile)})`);
+    if(tX >= 0 && tY >= 0) {
+      this.setState({ tile });
+      this.props.setTitle(`${tile} (${decHex(tile)})`);
+    }
   };
 
   onMouseLeave = e => {

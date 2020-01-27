@@ -36,8 +36,10 @@ export default class GBDKSpriteData extends Component {
     const palette = Math.floor(y / 8) < 16 ? "OBP0" : "OBP1";
     const tileLabel = (tX * 2 + tY % 2 + Math.floor(tY / 2) * 32) % 256;
 
-    this.setState({ tile });
-    this.props.setTitle(`${palette} ${tileLabel} (${decHex(tileLabel)})`);
+    if(tX >= 0 && tY >= 0) {
+      this.setState({ tile });
+      this.props.setTitle(`${palette} ${tileLabel} (${decHex(tileLabel)})`);
+    }
   };
 
   onMouseLeave = e => {

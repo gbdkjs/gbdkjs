@@ -34,10 +34,12 @@ export default class GBDKTileMap extends Component {
     const tX = Math.floor(x / 8) % 32;
     const tY = Math.floor(y / 8);
     const tile = tX + 32 * tY;
-    this.setState({ tile });
-    this.props.setTitle(
-      `[${tX},${tY}] = ${tiles[tile]} (${decHex(tiles[tile])})`
-    );
+    if(tX >= 0 && tY >= 0) {
+      this.setState({ tile });
+      this.props.setTitle(
+        `[${tX},${tY}] = ${tiles[tile]} (${decHex(tiles[tile])})`
+      );
+    }
   };
 
   onMouseLeave = e => {

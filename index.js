@@ -206,6 +206,8 @@
         }
       });
 
+      this.debugValues = {};
+
       // Init Canvases ---------------------------------------------------------
 
       var canvas = document.createElement("canvas");
@@ -257,6 +259,7 @@
       var joypad = 0;
 
       var lcd_fn = null;
+      var vbl_fns = [];
       var bank = 0;
 
       var bkg_tiles = new Uint8Array(BUFFER_SIZE);
@@ -599,6 +602,9 @@
             );
           }
         }
+        for(var i=0; i<vbl_fns.length; i++) {
+          Module.dynCall_v(vbl_fns[i]);
+        }
       }
 
       // Public Methods --------------------------------------------------------
@@ -738,6 +744,10 @@
       this.remove_LCD = function() {
         lcd_fn = null;
       };
+
+      this.add_VBL = function(int_handler) {
+        vbl_fns.push(int_handler);
+      };      
 
       this.disable_interrupts = function() {};
 

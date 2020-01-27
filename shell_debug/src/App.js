@@ -10,6 +10,8 @@ import GBDKSpriteData from "./GBDKSpriteData";
 import GBDKSprites from "./GBDKSprites";
 import GBDKRegisters from "./GBDKRegisters";
 import GBDKControls from "./GBDKControls";
+import GBDKValues from "./GBDKValues";
+
 import g from "./gbdkjs-instance";
 import shuffle from "./lib/shuffle";
 import "./App.css";
@@ -67,6 +69,7 @@ const windowTypes = {
   SPRITE_DATA: "Sprite Data",
   SPRITES: "Sprites",
   REGISTERS: "Registers",
+  VALUES: "Values",
   CONTROLS: "Controls"
 };
 
@@ -174,6 +177,7 @@ class GBDKWindow extends Component {
             setTitle={this.setTitle}
           />}
         {type === "REGISTERS" && <GBDKRegisters gbdk={g} />}
+        {type === "VALUES" && <GBDKValues gbdk={g} />}
         {type === "CONTROLS" &&
           <GBDKControls gbdk={g} setTitle={this.setTitle} />}
       </Window>

@@ -1,0 +1,21 @@
+.GBDKValues {
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 300px;
+  font-family: monospace;
+}
+
+.GBDKValues td {
+  padding: 4px;
+  text-align: right;
+}
+
+.GBDKValues th {
+  padding: 4px;
+  text-align: left;
+}
+
+.GBDKValues tr:nth-child(odd) td,
+.GBDKValues tr:nth-child(odd) th {
+  background-color: #efefef;
+}

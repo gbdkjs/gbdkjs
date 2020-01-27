@@ -28,6 +28,10 @@ mergeInto(LibraryManager.library, {
     g.remove_LCD();
   },
 
+  add_VBL: function(fn) {
+    g.add_VBL(fn);
+  },
+
   wait_vbl_done: function() {
     g.wait_vbl_done();
   },
@@ -93,6 +97,10 @@ mergeInto(LibraryManager.library, {
     g.set_sprite_tile(uint(nb), uint(tile));
   },
 
+  set_sprite_palette: function(first_palette, nb_palettes, data) {
+
+  },
+
   emscripten_update_registers: function(
     SCX_REG,
     SCY_REG,
@@ -131,5 +139,9 @@ mergeInto(LibraryManager.library, {
     if (OBP1_REG !== g.OBP1_REG) {
       g.OBP1_REG = uint(OBP1_REG);
     }
+  },
+
+  emscripten_log_value: function(name, value) {
+    g.debugValues[UTF8ToString(name)] = value;
   }
 });

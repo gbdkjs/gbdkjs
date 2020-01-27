@@ -36,13 +36,15 @@ export default class GBDKSprites extends Component {
     const x = e.pageX - pos.left;
     const tX = Math.floor(x / 8) % 40;
     const tile = tX;
+    if(tX >= 0) {
     this.setState({ tile });
-    this.props.setTitle(
-      `${tile} (${decHex(tile)}) = ${tiles[tile]} (${decHex(tiles[tile])}) ` +
-        (props[tile] & S_PALETTE ? "OBP1" : "OBP0") +
-        (props[tile] & S_FLIPX ? " FLIPX" : "") +
-        (props[tile] & S_FLIPY ? " FLIPY" : "")
-    );
+      this.props.setTitle(
+        `${tile} (${decHex(tile)}) = ${tiles[tile]} (${decHex(tiles[tile])}) ` +
+          (props[tile] & S_PALETTE ? "OBP1" : "OBP0") +
+          (props[tile] & S_FLIPX ? " FLIPX" : "") +
+          (props[tile] & S_FLIPY ? " FLIPY" : "")
+      );
+    }
   };
 
   onMouseLeave = e => {
