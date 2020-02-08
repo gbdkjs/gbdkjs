@@ -14,6 +14,8 @@
   #define BYTE char
   #define UWORD unsigned short
   #define WORD short
+  #define UINT16 unsigned short
+  #define INT16 short
 #else
   #define LOG(fmt, args...) 
   #define LOG_VALUE(a, b)

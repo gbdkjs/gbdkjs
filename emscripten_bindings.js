@@ -143,5 +143,13 @@ mergeInto(LibraryManager.library, {
 
   emscripten_log_value: function(name, value) {
     g.debugValues[UTF8ToString(name)] = value;
+  },
+
+  initrand: function(seed) {
+
+  },
+
+  rand: function() {
+    return Math.floor(Math.random() * 256)
   }
 });
