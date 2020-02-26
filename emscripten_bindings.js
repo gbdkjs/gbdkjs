@@ -32,6 +32,9 @@ mergeInto(LibraryManager.library, {
     g.add_VBL(fn);
   },
 
+  add_TIM: function(fn) {
+  },
+
   wait_vbl_done: function() {
     g.wait_vbl_done();
   },
