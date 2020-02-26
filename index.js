@@ -215,6 +215,11 @@
       canvas.width = SCREEN_WIDTH;
       canvas.height = SCREEN_HEIGHT;
 
+      var overflow_canvas = document.createElement("canvas");
+      var overflow_ctx = overflow_canvas.getContext("2d");
+      overflow_canvas.width = BUFFER_WIDTH;
+      overflow_canvas.height = BUFFER_HEIGHT;
+
       var buffer_canvas = document.createElement("canvas");
       var buffer_ctx = buffer_canvas.getContext("2d");
       buffer_canvas.width = BUFFER_WIDTH;
@@ -531,7 +536,24 @@
               ly,
               BUFFER_WIDTH,
               1
-            );
+            );          
+          }
+        }
+
+        // Draw screen overflow
+        for (var ly = 0; ly < 256; ly++) {
+          for (var xi = -1; xi < 2; xi++) {
+            overflow_ctx.drawImage(
+              buffer_canvas,
+               0,
+              (SCY_REG + (ly - 48)) % 256,
+              BUFFER_WIDTH,
+              1,
+              -(xi * BUFFER_WIDTH) - SCX_REG + 48,
+              ly,
+              BUFFER_WIDTH,
+              1
+            );            
           }
         }
 
@@ -600,17 +622,41 @@
               8,
               16
             );
+            overflow_ctx.drawImage(
+              sprite_canvas,
+              i * 8,
+              0,
+              8,
+              16,
+              (sprite_x[i] - 8 + 48) % BUFFER_WIDTH,
+              (sprite_y[i] - 16 + 48) % BUFFER_HEIGHT,
+              8,
+              16
+            );
           }
         }
         for(var i=0; i<vbl_fns.length; i++) {
           Module.dynCall_v(vbl_fns[i]);
         }
+
+        overflow_ctx.strokeStyle = "red";
+        overflow_ctx.lineWidth = 2;
+        overflow_ctx.strokeRect(
+          48 - 1,
+          48 - 1,
+          SCREEN_WIDTH + 2,
+          SCREEN_HEIGHT + 2
+        );  
       }
 
       // Public Methods --------------------------------------------------------
 
       this.get_canvas = function() {
         return canvas;
+      };
+
+      this.get_overflow_canvas = function() {
+        return overflow_canvas;
       };
 
       this.get_buffer_canvas = function() {

@@ -27,6 +27,11 @@ const DEFAULT_WINDOWS = [
   {
     w: 256,
     h: 256,
+    type: "SCREEN_OVERFLOW"
+  },  
+  {
+    w: 256,
+    h: 256,
     type: "SCREEN_BUFFER"
   },
   {
@@ -63,6 +68,7 @@ const DEFAULT_WINDOWS = [
 
 const windowTypes = {
   GAME: "Game",
+  SCREEN_OVERFLOW: "Screen Overflow",
   SCREEN_BUFFER: "Screen Buffer",
   WINDOW_BUFFER: "Window Buffer",
   BKG_DATA: "Tile Data",
@@ -147,6 +153,7 @@ class GBDKWindow extends Component {
         onClose={onClose}
       >
         {type === "GAME" && <GBDKGame canvas={g.get_canvas()} />}
+        {type === "SCREEN_OVERFLOW" && <GBDKGame canvas={g.get_overflow_canvas()} />}
         {type === "SCREEN_BUFFER" &&
           <GBDKTileMap
             canvas={g.get_buffer_canvas()}
