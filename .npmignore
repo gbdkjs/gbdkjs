@@ -57,3 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
+# Shell debug source files
+shell_debug/node_modules
+shell_debug/src
+shell_debug/public
