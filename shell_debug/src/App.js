@@ -66,8 +66,8 @@ const DEFAULT_WINDOWS = [
     type: "SPRITES"
   },
   {
-    w: 256,
-    h: 256,
+    w: 580,
+    h: 220,
     type: "MEMORY"
   }
 ];
