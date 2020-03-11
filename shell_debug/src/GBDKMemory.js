@@ -3,13 +3,14 @@ import React, { useRef, useState, useEffect } from 'react'
 // normally I like to kepp all my styles inline, but this has some global style:
 import './GBDKMemory.css'
 
-// TODO: add memory function to gbdk
-// This is mock for that
+// This is mock for memory
 // each line is a array-item from hex-viewer, but later it could be some other format
+// TODO: limit so address don't go out of bounds
 const getMemory = (start) => [...new Array(16)].map((v, i) => {
   const mem = [...new Array(16)].map(() => Math.random() * 255)
   const data = mem.map(n => hex(n | 0, 2))
-  const translated = mem.map(n => n < 0x7E && n > 20 ? String.fromCharCode(n) : '.')
+  // TODO: check for best key-range
+  const translated = mem.map(n => n < 126 && n > 20 ? String.fromCharCode(n) : '.')
   return `${hex(start + (i * 16))} ${data.join(' ')}  ${translated.join(' ')}`
 })
 
@@ -43,6 +44,13 @@ export default ({ gbdk, position = 0 }) => {
     onGo()
   }
 
+  // this make enter-key work for jumping
+  const onGoKey = e => {
+    if (e.key === 'Enter') {
+      onGo()
+    }
+  }
+
   const onScroll = e => setPos((e.target.scrollTop / 12) | 0)
 
   return (
@@ -61,8 +69,9 @@ export default ({ gbdk, position = 0 }) => {
             <option value='65408'>0xFF80 - RAM</option>
           </select>
         </div>
-        <div>
-          <input type='text' ref={go} placeholder='A000' />
+        <div style={{ fontFamily: 'monospace', fontSize: 11 }}>
+          0x
+          <input type='text' ref={go} placeholder='A000' onKeyUp={onGoKey} />
           <button onClick={onGo}>GO</button>
         </div>
       </div>
