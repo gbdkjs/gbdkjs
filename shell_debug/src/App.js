@@ -11,6 +11,7 @@ import GBDKSprites from "./GBDKSprites";
 import GBDKRegisters from "./GBDKRegisters";
 import GBDKControls from "./GBDKControls";
 import GBDKValues from "./GBDKValues";
+import GBDKMemory from "./GBDKMemory";
 
 import g from "./gbdkjs-instance";
 import shuffle from "./lib/shuffle";
@@ -63,6 +64,11 @@ const DEFAULT_WINDOWS = [
     w: 320,
     h: 16,
     type: "SPRITES"
+  },
+  {
+    w: 580,
+    h: 220,
+    type: "MEMORY"
   }
 ];
 
@@ -76,7 +82,8 @@ const windowTypes = {
   SPRITES: "Sprites",
   REGISTERS: "Registers",
   VALUES: "Values",
-  CONTROLS: "Controls"
+  CONTROLS: "Controls",
+  MEMORY: "Memory"
 };
 
 const packWindows = () => {
@@ -183,6 +190,7 @@ class GBDKWindow extends Component {
             props={g.get_sprite_props()}
             setTitle={this.setTitle}
           />}
+        {type === 'MEMORY' && <GBDKMemory gbdk={g} />}
         {type === "REGISTERS" && <GBDKRegisters gbdk={g} />}
         {type === "VALUES" && <GBDKValues gbdk={g} />}
         {type === "CONTROLS" &&
